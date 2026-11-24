@@ -28,7 +28,22 @@ import os
 import sys
 
 # U+1F3D6 BEACH WITH UMBRELLA — the dream-vacation emoji.
-EMOJI = "\U0001F3D6"
+EMOJI = "\U0001F3D6"  # BEACH WITH UMBRELLA (U+1F3D6): one codepoint, 4 bytes UTF-8
+
+
+def _require_single_emoji(value):
+    """Defence in depth: the entry must be exactly one non-whitespace codepoint.
+
+    Rejects an empty string, whitespace-only input, and anything longer than
+    a single codepoint before the write path ever sees it, so a bad value
+    fails loudly here instead of producing an invalid entry file.
+    """
+    if not isinstance(value, str) or len(value) != 1 or value.isspace():
+        raise ValueError("entry must be exactly one non-whitespace character")
+    return value
+
+
+EMOJI = _require_single_emoji(EMOJI)
 
 # The sealed gate accepts UTF-8 text of 1 to 8 characters, not only
 # whitespace. One emoji, no trailing newline, no extra text.
